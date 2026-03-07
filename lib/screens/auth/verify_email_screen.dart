@@ -129,7 +129,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               TextButton(
                 onPressed: () async {
                   await context.read<AuthProvider>().signOut();
-                  if (mounted) Navigator.pushReplacementNamed(context, '/login');
+                  if (!mounted) return;
+                  Navigator.pushReplacementNamed(context, '/login');
                 },
                 child: const Text(
                   'Back to Login',
