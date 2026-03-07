@@ -35,32 +35,17 @@ class AuthProvider extends ChangeNotifier {
       case 'invalid-credential':
       case 'wrong-password':
         return 'Incorrect email or password. Please try again.';
-      case 'user-not-found':
-        return 'No account found with this email.';
-      case 'email-already-in-use':
-        return 'An account with this email already exists.';
-      case 'weak-password':
-        return 'Password is too weak. Use at least 6 characters.';
-      case 'invalid-email':
-        return 'Please enter a valid email address.';
-      case 'too-many-requests':
-        return 'Too many attempts. Please wait a moment and try again.';
-      case 'network-request-failed':
-        return 'No internet connection. Please check your network.';
-      case 'user-disabled':
-        return 'This account has been disabled. Contact support.';
       default:
         return 'Something went wrong. Please try again.';
     }
   }
 
-  Future<bool> signUp(String email, String password, String displayName) async {
+  Future<bool> signUp(String email, String password, String displayName, String username) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-
     try {
-      await _authService.signUp(email, password, displayName);
+      await _authService.signUp(email, password, displayName, username);
       _isLoading = false;
       notifyListeners();
       return true;
@@ -76,7 +61,6 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-
     try {
       await _authService.signIn(email, password);
       await _firebaseUser?.reload();
@@ -97,6 +81,56 @@ class AuthProvider extends ChangeNotifier {
     _firebaseUser = null;
     _userProfile = null;
     notifyListeners();
+  }
+
+  Future<bool> updateProfile(String displayName, String username, String bio) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _authService.updateProfile(_firebaseUser!.uid, displayName, username, bio);
+      _userProfile = await _authService.getUserProfile(_firebaseUser!.uid);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _authService.changePassword(currentPassword, newPassword);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      _errorMessage = _friendlyError(e);
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> deleteAccount(String password) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _authService.deleteAccount(password);
+      _firebaseUser = null;
+      _userProfile = null;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      _errorMessage = _friendlyError(e);
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<void> reloadUser() async {

@@ -102,7 +102,7 @@ class _MapScreenState extends State<MapScreen> {
                       options: MapOptions(
                         initialCenter: _kigaliCenter,
                         initialZoom: 13,
-                        onTap: (_, __) => setState(() => _selectedListing = null),
+                        onTap: (tapPosition, point) => setState(() => _selectedListing = null),
                       ),
                       children: [
                         TileLayer(

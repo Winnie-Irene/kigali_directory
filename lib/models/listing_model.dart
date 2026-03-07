@@ -10,7 +10,11 @@ class ListingModel {
   final double latitude;
   final double longitude;
   final String createdBy;
+  final String createdByUsername;
   final DateTime timestamp;
+  final double avgRating;
+  final int reviewCount;
+  final int favouriteCount;
 
   ListingModel({
     required this.id,
@@ -22,7 +26,11 @@ class ListingModel {
     required this.latitude,
     required this.longitude,
     required this.createdBy,
+    this.createdByUsername = '',
     required this.timestamp,
+    this.avgRating = 0.0,
+    this.reviewCount = 0,
+    this.favouriteCount = 0,
   });
 
   factory ListingModel.fromFirestore(DocumentSnapshot doc) {
@@ -37,7 +45,11 @@ class ListingModel {
       latitude: (data['latitude'] ?? 0.0).toDouble(),
       longitude: (data['longitude'] ?? 0.0).toDouble(),
       createdBy: data['createdBy'] ?? '',
+      createdByUsername: data['createdByUsername'] ?? '',
       timestamp: (data['timestamp'] as Timestamp).toDate(),
+      avgRating: (data['avgRating'] ?? 0.0).toDouble(),
+      reviewCount: data['reviewCount'] ?? 0,
+      favouriteCount: data['favouriteCount'] ?? 0,
     );
   }
 
@@ -51,7 +63,11 @@ class ListingModel {
       'latitude': latitude,
       'longitude': longitude,
       'createdBy': createdBy,
+      'createdByUsername': createdByUsername,
       'timestamp': Timestamp.fromDate(timestamp),
+      'avgRating': avgRating,
+      'reviewCount': reviewCount,
+      'favouriteCount': favouriteCount,
     };
   }
 }

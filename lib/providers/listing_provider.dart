@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import '../services/listing_service.dart';
 import '../models/listing_model.dart';
+import '../models/review_model.dart';
 
 class ListingProvider extends ChangeNotifier {
   final ListingService _listingService = ListingService();
 
   List<ListingModel> _allListings = [];
   List<ListingModel> _userListings = [];
+  List<ListingModel> _favouriteListings = [];
+  List<ListingModel> _recentlyViewed = [];
   bool _isLoading = false;
   String? _errorMessage;
   String _searchQuery = '';
@@ -14,6 +17,8 @@ class ListingProvider extends ChangeNotifier {
 
   List<ListingModel> get allListings => _filteredListings();
   List<ListingModel> get userListings => _userListings;
+  List<ListingModel> get favouriteListings => _favouriteListings;
+  List<ListingModel> get recentlyViewed => _recentlyViewed;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String get searchQuery => _searchQuery;
@@ -22,11 +27,9 @@ class ListingProvider extends ChangeNotifier {
 
   List<ListingModel> _filteredListings() {
     return _allListings.where((listing) {
-      final matchesSearch = listing.name
-          .toLowerCase()
-          .contains(_searchQuery.toLowerCase());
-      final matchesCategory = _selectedCategory == 'All' ||
-          listing.category == _selectedCategory;
+      final matchesSearch = listing.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          listing.address.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesCategory = _selectedCategory == 'All' || listing.category == _selectedCategory;
       return matchesSearch && matchesCategory;
     }).toList();
   }
@@ -34,13 +37,12 @@ class ListingProvider extends ChangeNotifier {
   void listenToAllListings() {
     _isLoading = true;
     notifyListeners();
-
     _listingService.getAllListings().listen((listings) {
       _allListings = listings;
       _isLoading = false;
       notifyListeners();
-    }, onError: (error) {
-      _errorMessage = error.toString();
+    }, onError: (e) {
+      _errorMessage = e.toString();
       _isLoading = false;
       notifyListeners();
     });
@@ -50,17 +52,27 @@ class ListingProvider extends ChangeNotifier {
     _listingService.getUserListings(uid).listen((listings) {
       _userListings = listings;
       notifyListeners();
-    }, onError: (error) {
-      _errorMessage = error.toString();
+    });
+  }
+
+  void listenToFavourites(String uid) {
+    _listingService.getFavouriteListings(uid).listen((listings) {
+      _favouriteListings = listings;
       notifyListeners();
     });
+  }
+
+  void addToRecentlyViewed(ListingModel listing) {
+    _recentlyViewed.removeWhere((l) => l.id == listing.id);
+    _recentlyViewed.insert(0, listing);
+    if (_recentlyViewed.length > 10) _recentlyViewed = _recentlyViewed.sublist(0, 10);
+    notifyListeners();
   }
 
   Future<bool> createListing(ListingModel listing) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-
     try {
       await _listingService.createListing(listing);
       _isLoading = false;
@@ -78,7 +90,6 @@ class ListingProvider extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-
     try {
       await _listingService.updateListing(id, listing);
       _isLoading = false;
@@ -102,6 +113,23 @@ class ListingProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<void> toggleFavourite(String userId, String listingId) async {
+    await _listingService.toggleFavourite(userId, listingId);
+    notifyListeners();
+  }
+
+  Future<bool> isFavourited(String userId, String listingId) async {
+    return await _listingService.isFavourited(userId, listingId);
+  }
+
+  Stream<List<ReviewModel>> getReviews(String listingId) {
+    return _listingService.getReviews(listingId);
+  }
+
+  Future<void> addReview(ReviewModel review) async {
+    await _listingService.addReview(review);
   }
 
   void setSearchQuery(String query) {
