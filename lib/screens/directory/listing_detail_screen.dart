@@ -1,30 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/listing_model.dart';
 import '../../utils/constants.dart';
 
-class ListingDetailScreen extends StatefulWidget {
+class ListingDetailScreen extends StatelessWidget {
   final ListingModel listing;
 
   const ListingDetailScreen({super.key, required this.listing});
 
-  @override
-  State<ListingDetailScreen> createState() => _ListingDetailScreenState();
-}
-
-class _ListingDetailScreenState extends State<ListingDetailScreen> {
-  Set<Marker> get _markers => {
-        Marker(
-          markerId: MarkerId(widget.listing.id),
-          position: LatLng(widget.listing.latitude, widget.listing.longitude),
-          infoWindow: InfoWindow(title: widget.listing.name),
-        ),
-      };
-
   Future<void> _launchNavigation() async {
     final url =
-        'https://www.google.com/maps/dir/?api=1&destination=${widget.listing.latitude},${widget.listing.longitude}';
+        'https://www.google.com/maps/dir/?api=1&destination=${listing.latitude},${listing.longitude}';
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -32,7 +20,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   }
 
   Future<void> _launchPhone() async {
-    final uri = Uri.parse('tel:${widget.listing.contactNumber}');
+    final uri = Uri.parse('tel:${listing.contactNumber}');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     }
@@ -40,7 +28,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryData = kCategoryIcons[widget.listing.category] ?? kCategoryIcons['Other']!;
+    final categoryData = kCategoryIcons[listing.category] ?? kCategoryIcons['Other']!;
     final color = Color(categoryData['color'] as int);
     final iconData = IconData(categoryData['icon'] as int, fontFamily: 'MaterialIcons');
 
@@ -64,15 +52,34 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
               ),
             ),
             flexibleSpace: FlexibleSpaceBar(
-              background: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(widget.listing.latitude, widget.listing.longitude),
-                  zoom: 15,
+              background: FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(listing.latitude, listing.longitude),
+                  initialZoom: 15,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.none,
+                  ),
                 ),
-                markers: _markers,
-                onMapCreated: (_) {},
-                zoomControlsEnabled: false,
-                myLocationButtonEnabled: false,
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.kigali_directory',
+                  ),
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: LatLng(listing.latitude, listing.longitude),
+                        width: 40,
+                        height: 40,
+                        child: const Icon(
+                          Icons.location_pin,
+                          color: Color(0xFFFF6B6B),
+                          size: 40,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -96,7 +103,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                             Icon(iconData, color: color, size: 14),
                             const SizedBox(width: 6),
                             Text(
-                              widget.listing.category,
+                              listing.category,
                               style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600),
                             ),
                           ],
@@ -106,7 +113,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    widget.listing.name,
+                    listing.name,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -114,11 +121,11 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildInfoRow(Icons.location_on_outlined, widget.listing.address, const Color(0xFF4ECDC4)),
+                  _buildInfoRow(Icons.location_on_outlined, listing.address, const Color(0xFF4ECDC4)),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: _launchPhone,
-                    child: _buildInfoRow(Icons.phone_outlined, widget.listing.contactNumber, const Color(0xFF4ECDC4)),
+                    child: _buildInfoRow(Icons.phone_outlined, listing.contactNumber, const Color(0xFF4ECDC4)),
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -127,13 +134,13 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.listing.description,
+                    listing.description,
                     style: const TextStyle(color: Color(0xFF8892B0), fontSize: 14, height: 1.6),
                   ),
                   const SizedBox(height: 20),
                   _buildInfoRow(
                     Icons.my_location,
-                    '${widget.listing.latitude.toStringAsFixed(5)}, ${widget.listing.longitude.toStringAsFixed(5)}',
+                    '${listing.latitude.toStringAsFixed(5)}, ${listing.longitude.toStringAsFixed(5)}',
                     const Color(0xFF8892B0),
                   ),
                   const SizedBox(height: 32),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../../providers/listing_provider.dart';
 import '../../models/listing_model.dart';
@@ -18,34 +19,25 @@ class _MapScreenState extends State<MapScreen> {
 
   static const LatLng _kigaliCenter = LatLng(-1.9441, 30.0619);
 
-  Set<Marker> _buildMarkers(List<ListingModel> listings) {
+  List<Marker> _buildMarkers(List<ListingModel> listings) {
     return listings.map((listing) {
       final categoryData = kCategoryIcons[listing.category] ?? kCategoryIcons['Other']!;
-      final color = categoryData['color'] as int;
-
-      BitmapDescriptor markerColor;
-      if (color == 0xFFFF6B6B) {
-        markerColor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
-      } else if (color == 0xFF4ECDC4) {
-        markerColor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan);
-      } else if (color == 0xFFFFE66D) {
-        markerColor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow);
-      } else if (color == 0xFF6BCB77) {
-        markerColor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
-      } else if (color == 0xFFDA77FF) {
-        markerColor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
-      } else {
-        markerColor = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
-      }
+      final color = Color(categoryData['color'] as int);
 
       return Marker(
-        markerId: MarkerId(listing.id),
-        position: LatLng(listing.latitude, listing.longitude),
-        icon: markerColor,
-        infoWindow: InfoWindow(title: listing.name, snippet: listing.category),
-        onTap: () => setState(() => _selectedListing = listing),
+        point: LatLng(listing.latitude, listing.longitude),
+        width: 40,
+        height: 40,
+        child: GestureDetector(
+          onTap: () => setState(() => _selectedListing = listing),
+          child: Icon(
+            Icons.location_pin,
+            color: color,
+            size: 40,
+          ),
+        ),
       );
-    }).toSet();
+    }).toList();
   }
 
   @override
@@ -106,17 +98,21 @@ class _MapScreenState extends State<MapScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                    child: GoogleMap(
-                      initialCameraPosition: const CameraPosition(
-                        target: _kigaliCenter,
-                        zoom: 13,
+                    child: FlutterMap(
+                      options: MapOptions(
+                        initialCenter: _kigaliCenter,
+                        initialZoom: 13,
+                        onTap: (_, __) => setState(() => _selectedListing = null),
                       ),
-                      markers: _buildMarkers(listings),
-                      onMapCreated: (_) {},
-                      myLocationButtonEnabled: false,
-                      zoomControlsEnabled: true,
-                      mapToolbarEnabled: false,
-                      onTap: (_) => setState(() => _selectedListing = null),
+                      children: [
+                        TileLayer(
+                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.example.kigali_directory',
+                        ),
+                        MarkerLayer(
+                          markers: _buildMarkers(listings),
+                        ),
+                      ],
                     ),
                   ),
                   if (_selectedListing != null)
