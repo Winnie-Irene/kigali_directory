@@ -161,7 +161,7 @@ class SettingsScreen extends StatelessWidget {
                       Switch(
                         value: profile?.notificationsEnabled ?? false,
                         onChanged: (value) => authProvider.toggleNotifications(value),
-                        activeColor: const Color(0xFF4ECDC4),
+                        activeThumbColor: const Color(0xFF4ECDC4),
                         inactiveTrackColor: const Color(0xFF1A1A2E),
                       ),
                     ],

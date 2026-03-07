@@ -128,9 +128,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () async {
+                  final navigator = Navigator.of(context);
                   await context.read<AuthProvider>().signOut();
-                  if (!mounted) return;
-                  Navigator.pushReplacementNamed(context, '/login');
+                  navigator.pushReplacementNamed('/login');
                 },
                 child: const Text(
                   'Back to Login',
