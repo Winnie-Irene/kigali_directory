@@ -17,6 +17,9 @@ class AuthService {
     );
 
     await credential.user!.updateDisplayName(displayName);
+    
+    await Future.delayed(const Duration(seconds: 1));
+    
     await credential.user!.sendEmailVerification();
 
     final userModel = UserModel(
