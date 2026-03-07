@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/listing_provider.dart';
-import '../../providers/auth_provider.dart';
 import '../../widgets/listing_card.dart';
 import '../directory/listing_detail_screen.dart';
 import 'listing_form_screen.dart';
@@ -12,7 +11,6 @@ class MyListingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final listingProvider = context.watch<ListingProvider>();
-    final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),

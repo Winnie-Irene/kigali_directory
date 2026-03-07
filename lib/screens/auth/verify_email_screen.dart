@@ -24,7 +24,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     _timer = Timer.periodic(const Duration(seconds: 3), (_) async {
       final authProvider = context.read<AuthProvider>();
       await authProvider.reloadUser();
-      if (authProvider.isEmailVerified && mounted) {
+      if (!mounted) return;
+      if (authProvider.isEmailVerified) {
         _timer?.cancel();
         Navigator.pushReplacementNamed(context, '/home');
       }

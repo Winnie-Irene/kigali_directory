@@ -14,8 +14,6 @@ class ListingDetailScreen extends StatefulWidget {
 }
 
 class _ListingDetailScreenState extends State<ListingDetailScreen> {
-  GoogleMapController? _mapController;
-
   Set<Marker> get _markers => {
         Marker(
           markerId: MarkerId(widget.listing.id),
@@ -59,7 +57,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
               child: Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1A2E).withOpacity(0.7),
+                  color: const Color(0xFF1A1A2E).withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
@@ -72,7 +70,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                   zoom: 15,
                 ),
                 markers: _markers,
-                onMapCreated: (controller) => _mapController = controller,
+                onMapCreated: (_) {},
                 zoomControlsEnabled: false,
                 myLocationButtonEnabled: false,
               ),
@@ -89,7 +87,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.15),
+                          color: color.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
