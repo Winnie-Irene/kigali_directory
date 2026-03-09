@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -19,19 +20,20 @@ class AuthService {
     await Future.delayed(const Duration(seconds: 1));
     await credential.user!.sendEmailVerification();
 
-    final userModel = UserModel(
-      uid: credential.user!.uid,
-      email: email,
-      displayName: displayName,
-      username: username,
-      notificationsEnabled: false,
-      joinedAt: DateTime.now(),
-    );
-
-    await _firestore
-        .collection('users')
-        .doc(credential.user!.uid)
-        .set(userModel.toMap());
+    try {
+      await _firestore.collection('users').doc(credential.user!.uid).set({
+        'email': email,
+        'displayName': displayName,
+        'username': username,
+        'bio': '',
+        'notificationsEnabled': false,
+        'totalListings': 0,
+        'joinedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      // Log but don't block signup — user can still log in
+      debugPrint('Firestore profile save failed: $e');
+    }
 
     return credential;
   }

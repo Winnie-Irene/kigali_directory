@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   final String uid;
   final String email;
@@ -42,7 +44,7 @@ class UserModel {
       'bio': bio,
       'notificationsEnabled': notificationsEnabled,
       'totalListings': totalListings,
-      'joinedAt': joinedAt,
+      'joinedAt': joinedAt != null ? Timestamp.fromDate(joinedAt!) : FieldValue.serverTimestamp(),
     };
   }
 
