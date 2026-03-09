@@ -27,7 +27,7 @@ class _MainScaffoldState extends State<MainScaffold> {
   @override
   void initState() {
     super.initState();
-    // Start ALL listeners here so every screen has data immediately
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final uid = context.read<AuthProvider>().firebaseUser?.uid ?? '';
       final listingProvider = context.read<ListingProvider>();

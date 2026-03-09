@@ -31,7 +31,7 @@ class AuthService {
         'joinedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      // Log but don't block signup — user can still log in
+      
       debugPrint('Firestore profile save failed: $e');
     }
 

@@ -149,7 +149,7 @@ class _ListingFormScreenState extends State<ListingFormScreen> with SingleTicker
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header info card
+             
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(

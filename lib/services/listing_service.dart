@@ -20,7 +20,7 @@ class ListingService {
         .snapshots()
         .map((s) {
           final listings = s.docs.map((d) => ListingModel.fromFirestore(d)).toList();
-          // Sort client-side — avoids needing a composite Firestore index
+          
           listings.sort((a, b) => b.timestamp.compareTo(a.timestamp));
           return listings;
         });
@@ -45,7 +45,7 @@ class ListingService {
         .snapshots()
         .map((s) {
           final reviews = s.docs.map((d) => ReviewModel.fromFirestore(d)).toList();
-          // Sort client-side — avoids needing a composite Firestore index
+          
           reviews.sort((a, b) => b.timestamp.compareTo(a.timestamp));
           return reviews;
         });
