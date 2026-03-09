@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import '../providers/listing_provider.dart';
 import '../screens/directory/directory_screen.dart';
 import '../screens/my_listings/my_listings_screen.dart';
 import '../screens/map/map_screen.dart';
@@ -22,6 +25,19 @@ class _MainScaffoldState extends State<MainScaffold> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Start ALL listeners here so every screen has data immediately
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final uid = context.read<AuthProvider>().firebaseUser?.uid ?? '';
+      final listingProvider = context.read<ListingProvider>();
+      listingProvider.listenToAllListings();
+      listingProvider.listenToUserListings(uid);
+      listingProvider.listenToFavourites(uid);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),
@@ -43,10 +59,7 @@ class _MainScaffoldState extends State<MainScaffold> {
           selectedItemColor: const Color(0xFF4ECDC4),
           unselectedItemColor: const Color(0xFF8892B0),
           type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-          ),
+          selectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontSize: 11),
           items: const [
             BottomNavigationBarItem(

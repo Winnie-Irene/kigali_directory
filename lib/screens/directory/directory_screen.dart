@@ -17,17 +17,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   final _searchController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final uid = context.read<AuthProvider>().firebaseUser?.uid ?? '';
-      context.read<ListingProvider>().listenToAllListings();
-      context.read<ListingProvider>().listenToUserListings(uid);
-      context.read<ListingProvider>().listenToFavourites(uid);
-    });
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -198,8 +187,10 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                                 onTap: () => Navigator.push(
                                   context,
                                   PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) => ListingDetailScreen(listing: listing),
-                                    transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(opacity: animation, child: child),
+                                    pageBuilder: (context, animation, secondaryAnimation) =>
+                                        ListingDetailScreen(listing: listing),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                                        FadeTransition(opacity: animation, child: child),
                                     transitionDuration: const Duration(milliseconds: 300),
                                   ),
                                 ),
