@@ -17,9 +17,13 @@ class ListingService {
     return _firestore
         .collection('listings')
         .where('createdBy', isEqualTo: uid)
-        .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((s) => s.docs.map((d) => ListingModel.fromFirestore(d)).toList());
+        .map((s) {
+          final listings = s.docs.map((d) => ListingModel.fromFirestore(d)).toList();
+          // Sort client-side — avoids needing a composite Firestore index
+          listings.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          return listings;
+        });
   }
 
   Future<void> createListing(ListingModel listing) async {
@@ -38,9 +42,13 @@ class ListingService {
     return _firestore
         .collection('reviews')
         .where('listingId', isEqualTo: listingId)
-        .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((s) => s.docs.map((d) => ReviewModel.fromFirestore(d)).toList());
+        .map((s) {
+          final reviews = s.docs.map((d) => ReviewModel.fromFirestore(d)).toList();
+          // Sort client-side — avoids needing a composite Firestore index
+          reviews.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          return reviews;
+        });
   }
 
   Future<void> addReview(ReviewModel review) async {
