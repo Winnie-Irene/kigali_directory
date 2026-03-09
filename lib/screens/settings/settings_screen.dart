@@ -219,8 +219,7 @@ class SettingsScreen extends StatelessWidget {
                           '• Save your favourite places\n'
                           '• Get directions to any location\n\n'
                           'Version 1.0.0\n'
-                          'Built with Flutter & Firebase\n'
-                          'Made with ❤️ for Kigali'),
+                          'Built with Flutter & Firebase\n'),
                       ),
                       _buildSettingsTile(
                         icon: Icons.privacy_tip_outlined,
