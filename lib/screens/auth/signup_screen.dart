@@ -33,6 +33,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
       CurvedAnimation(parent: _animController, curve: Curves.easeOut),
     );
     _animController.forward();
+    _passwordController.addListener(() => setState(() {}));
   }
 
   @override
@@ -47,23 +48,35 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
   }
 
   void _showErrorBanner(String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+    ScaffoldMessenger.of(context).clearMaterialBanners();
+    ScaffoldMessenger.of(context).showMaterialBanner(
+      MaterialBanner(
+        padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white, size: 20),
-            const SizedBox(width: 10),
-            Expanded(child: Text(message, style: const TextStyle(color: Colors.white))),
+            const Icon(Icons.error_outline_rounded, color: Colors.white, size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ),
           ],
         ),
-        backgroundColor: const Color(0xFFE53935),
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 4),
+        backgroundColor: const Color(0xFFB71C1C),
+        dividerColor: Colors.transparent,
+        actions: [
+          TextButton(
+            onPressed: () => ScaffoldMessenger.of(context).clearMaterialBanners(),
+            child: const Text('Dismiss', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w600)),
+          ),
+        ],
       ),
     );
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) ScaffoldMessenger.of(context).clearMaterialBanners();
+    });
   }
 
   Future<void> _handleSignup() async {
@@ -128,7 +141,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                     _buildField(
                       controller: _nameController,
                       label: 'Full Name',
-                      hint: 'Irene Wanjiru',
+                      hint: 'e.g. John Doe',
                       icon: Icons.person_outlined,
                       validator: (v) => v == null || v.isEmpty ? 'Enter your name' : null,
                     ),
@@ -136,7 +149,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                     _buildField(
                       controller: _usernameController,
                       label: 'Username',
-                      hint: '@irene_kigali',
+                      hint: 'e.g. john_kigali',
                       icon: Icons.alternate_email,
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Enter a username';
@@ -162,7 +175,7 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                     _buildField(
                       controller: _passwordController,
                       label: 'Password',
-                      hint: '••••••••',
+                      hint: 'Min 8 chars, letters, numbers & symbols',
                       icon: Icons.lock_outlined,
                       obscure: _obscurePassword,
                       suffixIcon: IconButton(
@@ -171,10 +184,15 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
                       ),
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Enter a password';
-                        if (v.length < 6) return 'Password must be at least 6 characters';
+                        if (v.length < 8) return 'Password must be at least 8 characters';
+                        if (!v.contains(RegExp(r'[A-Z]'))) return 'Include at least one uppercase letter';
+                        if (!v.contains(RegExp(r'[0-9]'))) return 'Include at least one number';
+                        if (!v.contains(RegExp(r'[!@#\$&*~%^()_\-+=<>?]'))) return 'Include at least one special character (!@#\$&*~)';
                         return null;
                       },
                     ),
+                    const SizedBox(height: 8),
+                    _buildPasswordStrengthIndicator(_passwordController.text),
                     const SizedBox(height: 16),
                     _buildField(
                       controller: _confirmPasswordController,
@@ -255,6 +273,90 @@ class _SignupScreenState extends State<SignupScreen> with SingleTickerProviderSt
             errorStyle: const TextStyle(color: Color(0xFFE53935)),
           ),
           validator: validator,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordStrengthIndicator(String password) {
+    int strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.contains(RegExp(r'[A-Z]'))) strength++;
+    if (password.contains(RegExp(r'[0-9]'))) strength++;
+    if (password.contains(RegExp(r'[!@#\$&*~%^()_\-+=<>?]'))) strength++;
+
+    final labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+    final colors = [
+      Colors.transparent,
+      const Color(0xFFFF6B6B),
+      const Color(0xFFFFE66D),
+      const Color(0xFFFF8C42),
+      const Color(0xFF6BCB77),
+    ];
+
+    if (password.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: List.generate(4, (i) => Expanded(
+            child: Container(
+              margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
+              height: 4,
+              decoration: BoxDecoration(
+                color: i < strength ? colors[strength] : const Color(0xFF1F2937),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          )),
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Text(
+              strength > 0 ? 'Password strength: ${labels[strength]}' : '',
+              style: TextStyle(color: colors[strength], fontSize: 12),
+            ),
+            const Spacer(),
+            if (password.isNotEmpty)
+              Text(
+                '${password.length} chars',
+                style: const TextStyle(color: Color(0xFF8892B0), fontSize: 11),
+              ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Wrap(
+          spacing: 6,
+          runSpacing: 4,
+          children: [
+            _buildRequirement('8+ characters', password.length >= 8),
+            _buildRequirement('Uppercase', password.contains(RegExp(r'[A-Z]'))),
+            _buildRequirement('Number', password.contains(RegExp(r'[0-9]'))),
+            _buildRequirement('Symbol', password.contains(RegExp(r'[!@#\$&*~%^()_\-+=<>?]'))),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRequirement(String label, bool met) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          met ? Icons.check_circle : Icons.radio_button_unchecked,
+          size: 12,
+          color: met ? const Color(0xFF6BCB77) : const Color(0xFF4A5568),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: met ? const Color(0xFF6BCB77) : const Color(0xFF4A5568),
+          ),
         ),
       ],
     );

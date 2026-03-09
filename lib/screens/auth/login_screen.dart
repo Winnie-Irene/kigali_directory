@@ -40,23 +40,35 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   void _showErrorBanner(String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+    ScaffoldMessenger.of(context).clearMaterialBanners();
+    ScaffoldMessenger.of(context).showMaterialBanner(
+      MaterialBanner(
+        padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
         content: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.white, size: 20),
-            const SizedBox(width: 10),
-            Expanded(child: Text(message, style: const TextStyle(color: Colors.white))),
+            const Icon(Icons.error_outline_rounded, color: Colors.white, size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ),
           ],
         ),
-        backgroundColor: const Color(0xFFE53935),
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 4),
+        backgroundColor: const Color(0xFFB71C1C),
+        dividerColor: Colors.transparent,
+        actions: [
+          TextButton(
+            onPressed: () => ScaffoldMessenger.of(context).clearMaterialBanners(),
+            child: const Text('Dismiss', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w600)),
+          ),
+        ],
       ),
     );
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) ScaffoldMessenger.of(context).clearMaterialBanners();
+    });
   }
 
   Future<void> _handleLogin() async {

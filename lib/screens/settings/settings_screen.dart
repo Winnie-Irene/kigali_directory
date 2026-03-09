@@ -196,28 +196,73 @@ class SettingsScreen extends StatelessWidget {
                         iconColor: const Color(0xFF74B9FF),
                         title: 'Get Help',
                         subtitle: 'FAQs and support resources',
-                        onTap: () => _showInfoDialog(context, 'Get Help', 'For support, contact us at support@kigalidirectory.rw or visit our help center at help.kigalidirectory.rw'),
+                        onTap: () => _showInfoDialog(context, 'Get Help',
+                          'Frequently Asked Questions\n\n'
+                          'How do I add a listing?\nGo to My Listings and tap "Add New". Fill in the details including coordinates which you can find by long-pressing a location in Google Maps.\n\n'
+                          'How do I find coordinates?\nOpen Google Maps, long press the location you want, and the coordinates will appear at the top of the screen.\n\n'
+                          'Can I edit my listings?\nYes. Go to My Listings, tap the edit icon on any of your listings and update the details.\n\n'
+                          'How do I report incorrect information?\nTap the listing, leave a review mentioning the issue, or contact us at support@kigalidirectory.rw\n\n'
+                          'Contact Support\nsupport@kigalidirectory.rw'),
                       ),
                       _buildSettingsTile(
                         icon: Icons.info_outline,
                         iconColor: const Color(0xFF8892B0),
                         title: 'About',
                         subtitle: 'Kigali Directory v1.0.0',
-                        onTap: () => _showInfoDialog(context, 'About Kigali Directory', 'Kigali Directory is a community-driven platform helping residents and visitors find essential services and places across Kigali, Rwanda.\n\nVersion 1.0.0\nBuilt with Flutter & Firebase'),
+                        onTap: () => _showInfoDialog(context, 'About Kigali Directory',
+                          'Kigali Directory is a community-driven platform helping residents and visitors discover essential services, businesses, and places of interest across Kigali, Rwanda.\n\n'
+                          'Our mission is to make Kigali more navigable and accessible by creating an open, crowd-sourced directory that grows with the city.\n\n'
+                          'Features\n'
+                          '• Browse and search thousands of listings\n'
+                          '• Add and manage your own listings\n'
+                          '• Leave ratings and reviews\n'
+                          '• Save your favourite places\n'
+                          '• Get directions to any location\n\n'
+                          'Version 1.0.0\n'
+                          'Built with Flutter & Firebase\n'
+                          'Made with ❤️ for Kigali'),
                       ),
                       _buildSettingsTile(
                         icon: Icons.privacy_tip_outlined,
                         iconColor: const Color(0xFFDA77FF),
                         title: 'Privacy Policy',
                         subtitle: 'How we handle your data',
-                        onTap: () => _showInfoDialog(context, 'Privacy Policy', 'We collect only the information necessary to provide our services. Your data is stored securely on Firebase and is never sold to third parties. You can delete your account at any time.'),
+                        onTap: () => _showInfoDialog(context, 'Privacy Policy',
+                          'Last updated: March 2026\n\n'
+                          'Data We Collect\n'
+                          'We collect your name, email address, username, and any listing content you voluntarily submit. We do not collect precise location data unless you explicitly provide coordinates for a listing.\n\n'
+                          'How We Use Your Data\n'
+                          'Your data is used solely to provide the Kigali Directory service — displaying your profile, attributing your listings, and enabling community features like reviews.\n\n'
+                          'Data Storage\n'
+                          'All data is stored securely on Google Firebase servers. We apply industry-standard security measures to protect your information.\n\n'
+                          'Your Rights\n'
+                          'You may update or delete your account and all associated data at any time from the Settings screen.\n\n'
+                          'Third Parties\n'
+                          'We do not sell, share, or rent your personal data to any third parties.\n\n'
+                          'Contact\nprivacy@kigalidirectory.rw'),
                       ),
                       _buildSettingsTile(
                         icon: Icons.gavel_outlined,
                         iconColor: const Color(0xFFFF8C42),
                         title: 'Terms & Legal',
                         subtitle: 'Terms of service and legal info',
-                        onTap: () => _showInfoDialog(context, 'Terms of Service', 'By using Kigali Directory, you agree to provide accurate listing information, respect other users, and not post misleading or harmful content. Listings may be removed for violating community guidelines.'),
+                        onTap: () => _showInfoDialog(context, 'Terms of Service',
+                          'Last updated: March 2026\n\n'
+                          'By using Kigali Directory you agree to the following:\n\n'
+                          'Acceptable Use\n'
+                          '• Provide accurate and truthful listing information\n'
+                          '• Do not post misleading, harmful, or offensive content\n'
+                          '• Do not impersonate other individuals or businesses\n'
+                          '• Respect the intellectual property of others\n\n'
+                          'Listings\n'
+                          'You are responsible for the accuracy of listings you create. Kigali Directory reserves the right to remove listings that violate community guidelines or contain false information.\n\n'
+                          'Reviews\n'
+                          'Reviews must be honest and based on genuine experience. Fake reviews or review manipulation is strictly prohibited.\n\n'
+                          'Account Termination\n'
+                          'We reserve the right to suspend or terminate accounts that repeatedly violate these terms.\n\n'
+                          'Limitation of Liability\n'
+                          'Kigali Directory is provided as-is. We are not liable for any inaccuracies in user-submitted content.\n\n'
+                          'Contact\nlegal@kigalidirectory.rw'),
                       ),
                     ]),
                     const SizedBox(height: 24),
@@ -506,25 +551,40 @@ class SettingsScreen extends StatelessWidget {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFF111827),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Color(0xFFFF6B6B)),
+            Icon(Icons.warning_amber_rounded, color: Color(0xFFFF6B6B), size: 24),
             SizedBox(width: 10),
             Text('Delete Account', style: TextStyle(color: Colors.white, fontSize: 18)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'This will permanently delete your account and all your listings. This cannot be undone.',
-              style: TextStyle(color: Color(0xFF8892B0), fontSize: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF6B6B).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFFF6B6B).withValues(alpha: 0.3)),
+              ),
+              child: const Text(
+                'This will permanently delete:\n• Your account and profile\n• All listings you created\n• Your reviews and saved places\n\nThis action cannot be undone.',
+                style: TextStyle(color: Color(0xFFFF6B6B), fontSize: 13, height: 1.6),
+              ),
             ),
             const SizedBox(height: 16),
-            _dialogField(passwordController, 'Enter password to confirm', Icons.lock_outline, obscure: true),
+            const Text(
+              'Enter your password to confirm:',
+              style: TextStyle(color: Color(0xFF8892B0), fontSize: 13),
+            ),
+            const SizedBox(height: 8),
+            _dialogField(passwordController, 'Your current password', Icons.lock_outline, obscure: true),
           ],
         ),
         actions: [
@@ -534,13 +594,58 @@ class SettingsScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-              final success = await authProvider.deleteAccount(passwordController.text);
-              if (ctx.mounted) Navigator.pop(ctx);
+              if (passwordController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please enter your password'),
+                    backgroundColor: Color(0xFFE53935),
+                  ),
+                );
+                return;
+              }
+              Navigator.pop(ctx);
+              _showFinalDeleteConfirmation(context, authProvider, passwordController.text);
+            },
+            child: const Text('Continue', style: TextStyle(color: Color(0xFFFF6B6B), fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFinalDeleteConfirmation(BuildContext context, AuthProvider authProvider, String password) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF111827),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Are you absolutely sure?', style: TextStyle(color: Colors.white, fontSize: 18)),
+        content: const Text(
+          'You are about to permanently delete your account. There is no going back after this.',
+          style: TextStyle(color: Color(0xFF8892B0), fontSize: 14, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('No, keep my account', style: TextStyle(color: Color(0xFF4ECDC4), fontWeight: FontWeight.w600)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final success = await authProvider.deleteAccount(password);
               if (success && context.mounted) {
                 Navigator.pushReplacementNamed(context, '/login');
+              } else if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(authProvider.errorMessage ?? 'Incorrect password. Please try again.'),
+                    backgroundColor: const Color(0xFFE53935),
+                  ),
+                );
               }
             },
-            child: const Text('Delete', style: TextStyle(color: Color(0xFFFF6B6B), fontWeight: FontWeight.bold)),
+            child: const Text('Yes, delete my account', style: TextStyle(color: Color(0xFFFF6B6B), fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -577,7 +682,12 @@ class SettingsScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF111827),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 18)),
-        content: Text(content, style: const TextStyle(color: Color(0xFF8892B0), fontSize: 14, height: 1.6)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Text(content, style: const TextStyle(color: Color(0xFF8892B0), fontSize: 13, height: 1.7)),
+          ),
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close', style: TextStyle(color: Color(0xFF4ECDC4)))),
         ],
